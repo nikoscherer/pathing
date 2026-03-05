@@ -77,7 +77,7 @@ class GraphController extends ChangeNotifier {
   }
 
   void step() {
-    if (algorithm == null) return;
+    _initializeAlgorithm();
     algorithm!.step();
     notifyListeners();
   }
@@ -124,6 +124,7 @@ class GraphController extends ChangeNotifier {
   }
 
   void _startTimer() {
+    if (algorithm!.timer != null) return;
     algorithm!.timer = Timer.periodic(
       Duration(milliseconds: (100 / speed).round()), 
       (_) {
