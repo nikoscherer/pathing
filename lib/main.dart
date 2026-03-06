@@ -12,23 +12,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Pathing Visualizer',
       theme: themeData,
-      home: const MyHomePage(title: 'Pathing Page'),
+      home: const PathingHomePage(title: 'Pathing Visualizer'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class PathingHomePage extends StatefulWidget {
   final String title;
 
-  const MyHomePage({super.key, required this.title});
+  const PathingHomePage({super.key, required this.title});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<PathingHomePage> createState() => _PathingHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _PathingHomePageState extends State<PathingHomePage> {
   @override
   void initState() {
     super.initState();
@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: AlgorithmVisualizer()
+      body: AlgorithmVisualizer(),
     );
   }
 }
