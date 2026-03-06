@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pathing/models/node_model.dart';
 import 'package:pathing/theme/theme.dart';
-import 'package:pathing/widgets/control_panel.dart';
-import 'package:pathing/widgets/graph/graph_controller.dart';
-import 'package:pathing/widgets/graph/node_graph.dart';
+import 'package:pathing/widgets/algorithm_visualizer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +9,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,10 +29,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final controller = GraphController();
-
-  DrawType drawType = DrawType.start;
-
   @override
   void initState() {
     super.initState();
@@ -49,27 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: SizedBox.expand(
-        child: Row(
-          crossAxisAlignment: .center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(40.0),
-              child: ControlPanel(controller: controller),
-            ),
-            VerticalDivider(
-              width: 1,
-            ),
-            Expanded(
-              child: Center(
-                child: NodeGraph(
-                  controller: controller
-                ),
-              ),
-            )
-          ]
-        )
-      )
+      body: AlgorithmVisualizer()
     );
   }
 }
