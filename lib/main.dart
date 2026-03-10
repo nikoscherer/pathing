@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:pathing/theme/theme.dart';
+import 'package:pathing/theme/app_theme.dart';
 import 'package:pathing/widgets/algorithm_visualizer.dart';
+import 'package:pathing/widgets/graph/notifiers/graph_controller.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => GraphController(),
+      child: MyApp()
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,7 +20,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pathing Visualizer',
-      theme: themeData,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       home: const PathingHomePage(title: 'Pathing Visualizer'),
     );
   }
@@ -35,12 +44,15 @@ class _PathingHomePageState extends State<PathingHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {  
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      backgroundColor: scheme.surfaceContainerLowest,
       body: AlgorithmVisualizer(),
     );
   }

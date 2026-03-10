@@ -29,6 +29,8 @@ class _SplitViewWidgetState extends State<SplitViewWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final children = [
@@ -44,11 +46,14 @@ class _SplitViewWidgetState extends State<SplitViewWidget> {
             onVerticalDragUpdate: (details) {
               if (widget.vertical) _onDrag(details, constraints.maxHeight);
             },
-            child: Container(
-              width: widget.vertical ? double.infinity : 6,
-              height: widget.vertical ? 6 : double.infinity,
-              color: Colors.grey.shade400,
-            ),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: Container(
+                width: widget.vertical ? double.infinity : 6,
+                height: widget.vertical ? 6 : double.infinity,
+                color: scheme.outlineVariant,
+              ),
+            )
           ),
           Expanded(child: widget.second)
         ];

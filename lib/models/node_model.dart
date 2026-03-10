@@ -39,6 +39,8 @@ class NodeModel {
   NodeModel? down;
   NodeModel? left;
 
+  Offset location;
+
   List<NodeModel> neighbors = [];
 
   NodeModel({
@@ -48,7 +50,8 @@ class NodeModel {
       this.up,
       this.right,
       this.down,
-      this.left
+      this.left,
+      this.location = const Offset(0, 0)
   });
 
   Color getColor() {
