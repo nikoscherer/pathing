@@ -27,6 +27,14 @@ class AppTheme {
     )
   );
 
+  static final inputDecorationTheme = InputDecorationTheme(
+    floatingLabelBehavior: FloatingLabelBehavior.always,
+    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+    ),
+  );
+
   static final light = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
@@ -36,6 +44,7 @@ class AppTheme {
 
     textTheme: textTheme,
     dropdownMenuTheme: dropdownMenuTheme,
+    inputDecorationTheme: inputDecorationTheme
   );
 
   static final dark = ThemeData(
@@ -47,5 +56,6 @@ class AppTheme {
 
     textTheme: textTheme,
     dropdownMenuTheme: dropdownMenuTheme,
+    inputDecorationTheme: inputDecorationTheme
   );
 }

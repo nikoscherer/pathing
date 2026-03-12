@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:pathing/widgets/controls/modules/algorithm_controls_widget.dart';
+import 'package:pathing/widgets/controls/modules/editor_controls_widget.dart';
+import 'package:pathing/widgets/controls/modules/node_controls_widget.dart';
+import 'package:pathing/controllers/graph_controller.dart';
 import 'package:pathing/widgets/layout/dropdown_menu_widget.dart';
+import 'package:provider/provider.dart';
 
 class ControlsWidget extends StatelessWidget {
   const ControlsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<GraphController>();
     final scheme = Theme.of(context).colorScheme;
 
     return Expanded(
@@ -22,6 +27,11 @@ class ControlsWidget extends StatelessWidget {
           child: Column(
             spacing: 10.0,
             children: [
+              EditorControlsWidget(),
+              DropdownMenuWidget(
+                title: "Node ${controller.selectedNode?.index ?? "(none)"}",
+                menu: NodeControlsWidget()
+              ),
               DropdownMenuWidget(
                 title: "Algorithm", 
                 menu: AlgorithmControlsWidget()

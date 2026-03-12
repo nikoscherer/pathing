@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pathing/theme/app_theme.dart';
 import 'package:pathing/widgets/algorithm_visualizer.dart';
-import 'package:pathing/widgets/graph/notifiers/graph_controller.dart';
+import 'package:pathing/controllers/graph_controller.dart';
 import 'package:provider/provider.dart';
 
 void main() {

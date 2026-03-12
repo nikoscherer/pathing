@@ -8,13 +8,12 @@ enum Direction {
 }
 
 enum DrawType {
-  toggle("Toggle", Color.fromARGB(255, 120, 120, 120)),
-  start("Start", Color.fromARGB(255, 0, 255, 0)),
-  target("Target", Color.fromARGB(255, 255, 0, 0));
+  move("Move Nodes"),
+  connect("Connect Nodes"),
+  add("Add Nodes");
 
   final String name;
-  final Color color;
-  const DrawType(this.name, this.color);
+  const DrawType(this.name);
 }
 
 enum NodeType {
@@ -78,24 +77,6 @@ class NodeModel {
     }
 
     return neighbors;
-  }
-
-  void draw(DrawType drawType) {
-    switch (drawType) {
-      case DrawType.toggle:
-        if (type == NodeType.active) {
-          type = NodeType.inactive;
-        } else {
-          type = NodeType.active;
-        }
-        return;
-      case DrawType.start:
-        type = NodeType.start;
-        return;
-      case DrawType.target:
-        type = NodeType.target;
-        return;
-    }
   }
 
   void connect(NodeModel node, Direction direction) {
