@@ -7,7 +7,7 @@ import 'package:pathing/models/node_model.dart';
 class BFS extends Algorithm {
   late Queue<NodeModel> queue;
 
-  BFS({required super.nodes, required super.startNode, required super.targetNode}) {
+  BFS({required super.startNode, required super.targetNode}) {
     queue = Queue();
     current.visited = true;
   }
@@ -40,6 +40,7 @@ class BFS extends Algorithm {
     if (current.type == NodeType.target) {
       debugPrint("Found Node!");
       searched = true;
+      current.visited = true;
       return;
     }
   }

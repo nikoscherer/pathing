@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pathing/controllers/algorithm_controller.dart';
+import 'package:pathing/controllers/graph_model.dart';
+import 'package:pathing/controllers/selection_controller.dart';
 import 'package:pathing/models/node_model.dart';
 import 'package:pathing/controllers/graph_controller.dart';
 import 'package:provider/provider.dart';
@@ -31,16 +34,19 @@ class _NodeControlsWidgetState extends State<NodeControlsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<GraphController>();
-    final node = controller.selectedNode;
+    final controller = context.read<GraphController>();
+    final graph = context.watch<GraphModel>();
+    final selection = context.watch<SelectionController>();
+    final algorithm = context.watch<AlgorithmController>();
+    final node = selection.selectedNode;
 
     if (node != null) {
-      if (xController.text != node.location.dx.toString() && updateX) {
-        xController.text = node.location.dx.toStringAsFixed(2);
+      if (xController.text != node.position.dx.toString() && updateX) {
+        xController.text = node.position.dx.toStringAsFixed(2);
       }
 
-      if (yController.text != node.location.dy.toString() && updateY) {
-        yController.text = node.location.dy.toStringAsFixed(2);
+      if (yController.text != node.position.dy.toString() && updateY) {
+        yController.text = node.position.dy.toStringAsFixed(2);
       }
     } else {
       xController.text = "";
@@ -65,7 +71,7 @@ class _NodeControlsWidgetState extends State<NodeControlsWidget> {
                     updateX = false;
                     final parsed = double.tryParse(value);
                     if (parsed != null) {
-                      node.location = Offset(parsed, node.location.dy);
+                      graph.moveNode(node, Offset(parsed, node.position.dy));
                     }
                   });
                 },
@@ -94,7 +100,7 @@ class _NodeControlsWidgetState extends State<NodeControlsWidget> {
                   final parsed = double.tryParse(value);
                   if (parsed != null) {
                     setState(() {
-                      node.location = Offset(node.location.dx, parsed);
+                      graph.moveNode(node, Offset(node.position.dx, parsed));
                     });
                   }
                 },
@@ -118,26 +124,31 @@ class _NodeControlsWidgetState extends State<NodeControlsWidget> {
             SizedBox(
               width: 5,
               height: 40,
-              child: Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: controller.selectedNode?.getColor() ?? Colors.transparent,
-                    borderRadius: BorderRadius.circular(10)
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: selection.selectedNode?.getColor() ?? Colors.transparent,
+                  borderRadius: BorderRadius.circular(10)
                 ),
-              )
+              ),
             ),
             DropdownMenu<NodeType>(
               label: Text("Node Type"),
-              key: ValueKey(controller.selectedNode),
-              initialSelection: controller.selectedNode?.type,
+              key: ValueKey(selection.selectedNode),
+              initialSelection: selection.selectedNode?.type,
               onSelected: (value) {
-                if (controller.selectedNode == null) return;
+                if (selection.selectedNode == null) return;
                 setState(() {
-                  controller.selectedNode!.type = value!;
+                  if (value == NodeType.start) {
+                    algorithm.start?.type = NodeType.active;
+                    algorithm.start = selection.selectedNode!;
+                  } else if (value == NodeType.target) {
+                    algorithm.target?.type = NodeType.active;
+                    algorithm.target = selection.selectedNode!;
+                  }
+                  selection.selectedNode!.type = value!;
                 });
               },
-              dropdownMenuEntries: controller.selectedNode != null? const [
+              dropdownMenuEntries: selection.selectedNode != null? const [
                 DropdownMenuEntry(
                   value: NodeType.active,
                   label: "Active"

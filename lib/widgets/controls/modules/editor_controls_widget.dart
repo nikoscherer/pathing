@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pathing/controllers/graph_controller.dart';
+import 'package:pathing/controllers/tools/graph_tool.dart';
 import 'package:provider/provider.dart';
 
 class EditorControlsWidget extends StatelessWidget {
@@ -22,19 +23,19 @@ class EditorControlsWidget extends StatelessWidget {
           FloatingActionButton(
             child: Icon(Icons.open_with),
             onPressed: () {
-              
+              controller.tool = MoveTool();
             }
           ),
           FloatingActionButton(
             child: Icon(Icons.device_hub),
             onPressed: () {
-              
+              controller.tool = ConnectTool();
             }
           ),
           FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
-              
+              controller.tool = AddTool();
             }
           ),
           

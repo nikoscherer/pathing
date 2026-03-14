@@ -1,106 +1,75 @@
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:pathing/controllers/algorithm_controller.dart';
+import 'package:pathing/controllers/camera_controller.dart';
+import 'package:pathing/controllers/graph_model.dart';
+import 'package:pathing/controllers/selection_controller.dart';
+import 'package:pathing/controllers/tool_controller.dart';
+import 'package:pathing/controllers/tools/graph_tool.dart';
 import 'package:pathing/models/node_model.dart';
 
-class GraphController extends ChangeNotifier {
-  List<NodeModel> nodes = [];
+class GraphController {
+  GraphModel graph;
+  CameraController camera;
+  SelectionController selection;
+  ToolController tools;
 
-  NodeModel? start;
-  NodeModel? target;
+  AlgorithmController algorithm;
 
-  NodeModel? selectedNode;
-  bool grabbedNode = false;
+  GraphTool tool = MoveTool();
 
-  DrawType drawType = DrawType.move;
+  double lastScale = 1.0;
+  Offset? lastFocalPoint;
 
-  double zoom = 1.0;
-  final double minZoom = 0.25;
-  final double maxZoom = 5;
-
-  double gridSpacing = 50;
-  double nodeRadius = 50;
-
-  Offset pan = Offset.zero;
-  Size size = Size.zero;
-
-  GraphController() {
+  GraphController({
+    required this.graph,
+    required this.camera,
+    required this.selection,
+    required this.tools,
+    required this.algorithm}) {
     _generate();
   }
 
   void _generate() {
-    nodes.add(NodeModel(index: nodes.length, location: Offset(0, 0)));
+    graph.nodes.add(NodeModel(index: graph.nodes.length, position: Offset(0, 0)));
   }
 
-  Offset toWorldCoordinates(Offset screenCoordinate) {
-    return screenCoordinate
-      .translate(-size.width / 2, -size.height / 2)
-      .scale( 1/ zoom, -1 / zoom)
-      .translate(pan.dx, pan.dy);
-  }
+  NodeModel? nodeAt(Offset position) {
+    for (NodeModel node in graph.nodes) {
+      double dx = position.dx - node.position.dx;
+      double dy = position.dy - node.position.dy;
 
-  void selectNode(Offset position) {
-    selectedNode = null;
-
-    for (NodeModel node in nodes) {
-      double dx = position.dx - node.location.dx;
-      double dy = position.dy - node.location.dy;
-
-      if (dx * dx + dy * dy <= nodeRadius * nodeRadius) {
-        selectedNode = node;
-        break;
+      if (dx * dx + dy * dy <= camera.nodeRadius * camera.nodeRadius) {
+        return node;
       }
     }
 
-    notifyListeners();
+    return null;
   }
 
-  void moveNode(Offset location) {
-    selectedNode!.location = location;
-    notifyListeners();
+  void handleSelection(Offset position) {
+    NodeModel? node = nodeAt(position);
+
+    if (node != null) {
+      selection.select(node);
+      selection.bNodeGrabbed = true;
+      debugPrint("Selected node at: ${node.position}");
+    }
   }
 
-  void grabNode() {
-    grabbedNode = true;
-  }
-
-  void dropNode() {
-    grabbedNode = false;
-  }
-
-  void updateZoom(double newZoom, Offset newPan) {
-    zoom = newZoom.clamp(minZoom, maxZoom);
-    pan = newPan;
-    notifyListeners();
+  void handleTapDown(TapDownDetails details) {
+    tool.onTapDown(this, camera.toWorldCoordinates(details.localPosition));
   }
 
   void handleScaleStart(ScaleStartDetails details) {
-    switch (drawType) {
-      case .move:
-        selectNode(toWorldCoordinates(details.localFocalPoint));
-        grabbedNode = true;
-        break;
-      case .connect:
-
-        break;
-      case .add:
-
-        break;
-    }
+    tool.onScaleStart(this, details);
   }
 
   void handleScaleUpdate(ScaleUpdateDetails details) {
-    switch (drawType) {
-      case .move:
-      
-        break;
-      case .connect:
+    tool.onScaleUpdate(this, details);
+  }
 
-        break;
-      case .add:
-
-        break;
-    }
+  void handleScaleEnd(ScaleEndDetails details) {
+    tool.onScaleEnd(this, details);
   }
 }

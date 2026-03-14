@@ -33,12 +33,7 @@ class NodeModel {
 
   bool visited;
 
-  NodeModel? up;
-  NodeModel? right;
-  NodeModel? down;
-  NodeModel? left;
-
-  Offset location;
+  Offset position;
 
   List<NodeModel> neighbors = [];
 
@@ -46,11 +41,7 @@ class NodeModel {
       required this.index,
       this.type = NodeType.active,
       this.visited = false,
-      this.up,
-      this.right,
-      this.down,
-      this.left,
-      this.location = const Offset(0, 0)
+      this.position = const Offset(0, 0)
   });
 
   Color getColor() {
@@ -62,44 +53,16 @@ class NodeModel {
   }
 
   List<NodeModel> getNeighbors() {
-    List<NodeModel> neighbors = [];
-    if (up != null && up!.type != NodeType.inactive) {
-      neighbors.add(up!);
-    }
-     if (right != null && right!.type != NodeType.inactive) {
-      neighbors.add(right!);
-    }
-     if (down != null && down!.type != NodeType.inactive) {
-      neighbors.add(down!);
-    }
-     if (left != null && left!.type != NodeType.inactive) {
-      neighbors.add(left!);
-    }
-
     return neighbors;
   }
 
-  void connect(NodeModel node, Direction direction) {
-    switch (direction) {
-      case Direction.left:
-        left = node;
-        node.right = this;
-        return;
-      
-      case Direction.right:
-        right = node;
-        node.left = this;
-        return;
+  void connect(NodeModel node) {
+    neighbors.add(node);
+    node.neighbors.add(this);
+  }
 
-      case Direction.down:
-        down = node;
-        node.up = this;
-        return;
-
-      case Direction.up:
-        up = node;
-        node.down = this;
-        return;
-    }
+  void disconnect(NodeModel node) {
+    neighbors.remove(node);
+    node.neighbors.remove(this);
   }
 }

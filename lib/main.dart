@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pathing/controllers/algorithm_controller.dart';
+import 'package:pathing/controllers/camera_controller.dart';
+import 'package:pathing/controllers/graph_model.dart';
+import 'package:pathing/controllers/selection_controller.dart';
+import 'package:pathing/controllers/tool_controller.dart';
 import 'package:pathing/theme/app_theme.dart';
 import 'package:pathing/widgets/algorithm_visualizer.dart';
 import 'package:pathing/controllers/graph_controller.dart';
@@ -6,9 +11,26 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => GraphController(),
-      child: MyApp()
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GraphModel()),
+        ChangeNotifierProvider(create: (_) => CameraController()),
+        ChangeNotifierProvider(create: (_) => SelectionController()),
+        ChangeNotifierProvider(create: (_) => ToolController()),
+
+        ChangeNotifierProvider(create: (_) => AlgorithmController()),
+
+        Provider(
+          create: (context) => GraphController(
+            graph: context.read<GraphModel>(),
+            camera: context.read<CameraController>(),
+            selection: context.read<SelectionController>(),
+            tools: context.read<ToolController>(),
+            algorithm: context.read<AlgorithmController>()
+          ),
+        )
+      ],
+      child: MyApp(),
     )
   );
 }

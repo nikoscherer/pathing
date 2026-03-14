@@ -10,8 +10,7 @@ enum AlgorithmType {
   const AlgorithmType(this.type);
 }
 
-class Algorithm {
-  List<NodeModel> nodes;
+abstract class Algorithm {
   NodeModel startNode;
   NodeModel targetNode;
 
@@ -22,12 +21,10 @@ class Algorithm {
   Timer? timer;
   bool isRunning = false;
 
-  Algorithm({required this.nodes, required this.startNode, required this.targetNode}) {
+  Algorithm({required this.startNode, required this.targetNode}) {
     current = startNode;
     current.visited = true;
   }
 
-  void step() {
-    
-  }
+ void step() {}
 }

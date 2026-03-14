@@ -9,7 +9,7 @@ class NodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment(node.location.dx, node.location.dy),
+      alignment: Alignment(node.position.dx, node.position.dy),
       width: size,
       height: size,
       decoration: BoxDecoration(

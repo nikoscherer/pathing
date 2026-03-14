@@ -5,7 +5,7 @@ import 'package:pathing/models/node_model.dart';
 class DFS extends Algorithm {
   late List<NodeModel> stack;
 
-  DFS({required super.nodes, required super.startNode, required super.targetNode}) {
+  DFS({required super.startNode, required super.targetNode}) {
     stack = [];
     current.visited = true;
   }
@@ -38,6 +38,7 @@ class DFS extends Algorithm {
     if (current.type == NodeType.target) {
       debugPrint("Found Node!");
       searched = true;
+      current.visited = true;
       return;
     }
   }
