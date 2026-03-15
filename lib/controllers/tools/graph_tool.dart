@@ -3,63 +3,21 @@ import 'package:pathing/controllers/graph_controller.dart';
 import 'package:pathing/models/node_model.dart';
 
 abstract class GraphTool {
-  void onTapDown(GraphController controller, Offset worldPosition) {}
-
-  void onScaleStart(GraphController controller, ScaleStartDetails details) {
-    controller.lastScale = 1.0;
-    controller.lastFocalPoint = details.focalPoint;
-    controller.handleSelection(controller.camera.toWorldCoordinates(details.localFocalPoint));
-  }
-
-  void onScaleUpdate(GraphController controller, ScaleUpdateDetails details) {
-    if (!controller.selection.bNodeGrabbed) {
-      double zoom = controller.camera.zoom * details.scale / controller.lastScale;
-      Offset pan = controller.camera.pan +
-       (zoom - controller.camera.zoom == 0? details.focalPointDelta.scale(-1, 1) : Offset(0, 0))
-        / controller.camera.zoom;
-      controller.camera.updateZoom(zoom, pan);
-
-      controller.lastScale = details.scale;
-      controller.lastFocalPoint = details.focalPoint;
-    }
-  }
-
-  void onScaleEnd(GraphController controller, ScaleEndDetails details) {
-    controller.lastScale = 1.0;
-    controller.lastFocalPoint = null;
-    controller.selection.bNodeGrabbed = false;
-  }
-}
-
-enum MoveGestureMode {
-  undecided,
-  dragNode,
-  zoomPan
-}
-
-class MoveTool extends GraphTool {
-  MoveGestureMode mode = MoveGestureMode.undecided;
-
-  @override
   void onTapDown(GraphController controller, Offset worldPosition) {
     controller.handleSelection(worldPosition);
   }
 
-  @override
   void onScaleStart(GraphController controller, ScaleStartDetails details) {
     controller.lastScale = 1.0;
     controller.lastFocalPoint = details.focalPoint;
-    controller.handleSelection(controller.camera.toWorldCoordinates(details.localFocalPoint));
-    mode = MoveGestureMode.undecided;
+
+    if (details.pointerCount == 1) {
+      controller.handleGrab(controller.camera.toWorldCoordinates(details.localFocalPoint));
+    }
   }
 
-  @override
   void onScaleUpdate(GraphController controller, ScaleUpdateDetails details) {
-    if (controller.selection.hasNode() && details.pointerCount == 1) {
-      Offset position = controller.camera.toWorldCoordinates(details.localFocalPoint);
-      controller.graph.moveNode(controller.selection.selectedNode!, position);
-      debugPrint("Moving node: $position");
-    } else {
+    if (!controller.selection.hasNode()) {
       double zoom = controller.camera.zoom * details.scale / controller.lastScale;
       Offset pan = controller.camera.pan +
        (zoom - controller.camera.zoom == 0? details.focalPointDelta.scale(-1, 1) : Offset(0, 0))
@@ -71,12 +29,23 @@ class MoveTool extends GraphTool {
     }
   }
 
-  @override
   void onScaleEnd(GraphController controller, ScaleEndDetails details) {
     controller.lastScale = 1.0;
     controller.lastFocalPoint = null;
     controller.selection.bNodeGrabbed = false;
-    mode = MoveGestureMode.undecided;
+  }
+}
+
+class MoveTool extends GraphTool {
+  @override
+  void onScaleUpdate(GraphController controller, ScaleUpdateDetails details) {
+    if (!controller.selection.hasNode()) {
+      super.onScaleUpdate(controller, details);
+    } else {
+      Offset position = controller.camera.toWorldCoordinates(details.localFocalPoint);
+      controller.graph.moveNode(controller.selection.selectedNode!, position);
+      debugPrint("Moving node: $position");
+    }
   }
 }
 
@@ -84,12 +53,9 @@ class ConnectTool extends GraphTool {
   Offset? lastScalePosition;
 
   @override
-  void onTapDown(GraphController controller, Offset worldPosition) {
-    controller.handleSelection(worldPosition);
-  }
-
-  @override
   void onScaleStart(GraphController controller, ScaleStartDetails details) {
+    super.onScaleStart(controller, details);
+
     NodeModel? node = controller.nodeAt(controller.camera.toWorldCoordinates(details.localFocalPoint));
 
     if (node != null) {
@@ -99,10 +65,12 @@ class ConnectTool extends GraphTool {
 
   @override
   void onScaleUpdate(GraphController controller, ScaleUpdateDetails details) {
-    if (controller.selection.connectionStart == null) return;
-
-    controller.selection.updateConnection(controller.camera.toWorldCoordinates(details.localFocalPoint));
-    lastScalePosition = details.localFocalPoint;
+    if (controller.selection.connectionStart != null && controller.selection.hasNode()) {
+      controller.selection.updateConnection(controller.camera.toWorldCoordinates(details.localFocalPoint));
+      lastScalePosition = details.localFocalPoint;
+    } else {
+      super.onScaleUpdate(controller, details);
+    }
   }
 
   @override

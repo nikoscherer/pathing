@@ -47,13 +47,21 @@ class GraphController {
     return null;
   }
 
-  void handleSelection(Offset position) {
+  bool handleSelection(Offset position) {
     NodeModel? node = nodeAt(position);
 
     if (node != null) {
       selection.select(node);
+      selection.bNodeGrabbed = false;
+      return true;
+    }
+
+    return false;
+  }
+
+  void handleGrab(Offset position) {
+    if (handleSelection(position)) {
       selection.bNodeGrabbed = true;
-      debugPrint("Selected node at: ${node.position}");
     }
   }
 
